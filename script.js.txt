@@ -1,0 +1,53 @@
+// Datos iniciales de profesores
+let profes = [
+    { id: 1, nombre: "Juan Pérez", bloque: "001-030", vendidas: 12, entregado: 4200 },
+    { id: 2, nombre: "María Gómez", bloque: "031-060", vendidas: 32, entregado: 11200 },
+    { id: 3, nombre: "Carlos Rodríguez", bloque: "061-090", vendidas: 8, entregado: 2800 },
+    { id: 4, nombre: "Lucía Fernández", bloque: "091-120", vendidas: 25, entregado: 8750 }
+];
+
+// Base de datos simulada de tickets emitidos
+let ticketsEmitidos = [
+    { codigo: "MG-001", num: "N° 001", profe: "Juan Pérez", comprador: "Ana López", usado: false }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+    actualizarDashboard();
+    cargarTablaProfes();
+    cargarSelectProfes();
+});
+
+function switchTab(event, tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+function actualizarDashboard() {
+    let totalVendidas = profes.reduce((acc, p) => acc + p.vendidas, 0);
+    let totalRecaudado = totalVendidas * 350; // Tanda actual $350
+
+    document.getElementById("totalEntradas").innerText = `${totalVendidas} / 1.500`;
+    document.getElementById("totalRecaudacion").innerText = `$${totalRecaudado.toLocaleString()}`;
+    
+    let porcentaje = (totalVendidas / 1500) * 100;
+    document.getElementById("progressTotal").style.width = `${porcentaje}%`;
+}
+
+function cargarTablaProfes() {
+    let tbody = document.getElementById("tablaProfesBody");
+    tbody.innerHTML = "";
+
+    // Ordenar de mayor a menor venta
+    let profesOrdenados = [...profes].sort((a, b) => b.vendidas - a.vendidas);
+
+    profesOrdenados.forEach((p, index) => {
+        let ganoPremio = p.vendidas >= 30;
+        let badge = ganoPremio 
+            ? `** ¡Ganado!` 
+            : `Faltan ${30 - p.vendidas}`;
+
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
